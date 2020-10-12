@@ -42,8 +42,9 @@ public class EasyHTTP {
             return nil
         }
     }
-    public func setAuth(type:String,credentials:String) -> EasyHTTP {
+    public func setAuth(type:String = "Basic",credentials:String) -> EasyHTTP {
         self.urlRequest!.setValue("\(type) \(credentials)", forHTTPHeaderField: "Authorization")
+        print(urlRequest?.allHTTPHeaderFields)
         return self
     }
     public func customHeaders(list:Dictionary<String,String>){
