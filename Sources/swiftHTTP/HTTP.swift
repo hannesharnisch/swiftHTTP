@@ -104,7 +104,7 @@ public struct EasyHTTPRequestSetup<L>{
         http?.onResult(callback: { (response, result) in
             callback(self.dataprocessing(response,result))
         })
-        return http
+        return http!
     }
     func build(url:String,methode:HttpMethode = .get,callback:@escaping (L) -> ()) -> EasyHTTP{
         let http = EasyHTTP(methode: methode).with(url: url)
@@ -115,7 +115,7 @@ public struct EasyHTTPRequestSetup<L>{
         http?.onResult(callback: { (response, result) in
             callback(self.dataprocessing(response,result))
         })
-        return http
+        return http!
     }
     public init(auth:String? = nil,authType:String = "Basic", headers:Dictionary<String,String>? = nil,dataprocessing:@escaping (URLResponse?,Result<Data,Error>) -> (L)){
         self.auth = auth
@@ -147,7 +147,7 @@ public struct EasyHTTPRequests {
         }
     }
     static func basicAuthStandard<T:Decodable>(type:T.Type,auth:String)->EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>{
-        let requestSetup =  EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>(auth: auth){ (response, res) -> ((URLResponse?,Result<T,Error>)) in
+        return EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>(auth: auth){ (response, res) -> ((URLResponse?,Result<T,Error>)) in
             switch res{
             case .success(let data):
                 do{
