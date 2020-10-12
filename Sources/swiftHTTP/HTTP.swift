@@ -44,7 +44,6 @@ public class EasyHTTP {
     }
     public func setAuth(type:String = "Basic",credentials:String) -> EasyHTTP {
         self.urlRequest!.setValue("\(type) \(credentials)", forHTTPHeaderField: "Authorization")
-        print(urlRequest?.allHTTPHeaderFields)
         return self
     }
     public func customHeaders(list:Dictionary<String,String>){
@@ -81,6 +80,7 @@ public class EasyHTTP {
         return self
     }
     public func fire(){
+        print(urlRequest?.debugDescription)
         self.session?.resume()
     }
 }
