@@ -81,6 +81,8 @@ public class EasyHTTP {
     }
     public func fire(){
         print(urlRequest?.debugDescription)
+        print(urlRequest?.allHTTPHeaderFields)
+        print(String(data: (urlRequest?.httpBody) ?? "GET".data(using: .utf8)!, encoding: .utf8))
         self.session?.resume()
     }
 }
