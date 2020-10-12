@@ -10,14 +10,14 @@ import Foundation
 /**
  Class for handling HTTP Requests
  */
-class HTTP {
+public class HTTP {
     private var urlRequest:URLRequest?
     private let methode:HttpMethode
     private var session:URLSessionDataTask?
-    init(methode:HttpMethode){
+    public init(methode:HttpMethode){
         self.methode = methode
     }
-    func with<T:Codable>(url:String,body:T? = nil) -> HTTP? {
+    public func with<T:Codable>(url:String,body:T? = nil) -> HTTP? {
         self.urlRequest = URLRequest(url: URL(string: url)!)
         self.urlRequest?.httpMethod = self.methode.rawValue
         switch self.methode {
@@ -35,19 +35,19 @@ class HTTP {
             return self
         }
     }
-    func setAuth(type:String,credentials:String) -> HTTP {
+    public func setAuth(type:String,credentials:String) -> HTTP {
         self.urlRequest!.setValue("\(type) \(credentials)", forHTTPHeaderField: "Authorization")
         return self
     }
-    func customHeaders(list:Dictionary<String,String>){
+    public func customHeaders(list:Dictionary<String,String>){
         for item in list{
             self.urlRequest!.setValue(item.key, forHTTPHeaderField: item.key)
         }
     }
-    func onResult(callback:@escaping (URLResponse?,Result<Data,Error>) -> Void) -> HTTP{
+    public func onResult(callback:@escaping (URLResponse?,Result<Data,Error>) -> Void) -> HTTP{
         self.registerDataTask(callback: callback)
     }
-    func onResult<D:Decodable>(callback:@escaping (URLResponse?,Result<D,Error>)->Void) -> HTTP{
+    public func onResult<D:Decodable>(callback:@escaping (URLResponse?,Result<D,Error>)->Void) -> HTTP{
         self.registerDataTask { (response, result) in
             switch result{
             case .success(let data):
@@ -72,7 +72,7 @@ class HTTP {
         })
         return self
     }
-    func fire(){
+    public func fire(){
         self.session?.resume()
     }
 }
