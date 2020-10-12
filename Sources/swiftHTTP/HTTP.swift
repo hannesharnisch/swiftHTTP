@@ -95,7 +95,7 @@ public struct EasyHTTPRequestSetup<L>{
     public let authType:String
     private let dataprocessing:(URLResponse?,Result<Data,Error>) -> (L)
     
-    func build<T:Encodable>(url:String, body:T, methode:HttpMethode = .post,callback:@escaping (L) -> ()) -> EasyHTTP{
+    public func build<T:Encodable>(url:String, body:T, methode:HttpMethode = .post,callback:@escaping (L) -> ()) -> EasyHTTP{
         let http = EasyHTTP(methode: methode).with(url: url, body: body)
         if self.auth != nil{
             http?.setAuth(type: authType, credentials: auth!)
@@ -106,7 +106,7 @@ public struct EasyHTTPRequestSetup<L>{
         })
         return http!
     }
-    func build(url:String,methode:HttpMethode = .get,callback:@escaping (L) -> ()) -> EasyHTTP{
+    public func build(url:String,methode:HttpMethode = .get,callback:@escaping (L) -> ()) -> EasyHTTP{
         let http = EasyHTTP(methode: methode).with(url: url)
         if self.auth != nil{
             http?.setAuth(type: authType, credentials: auth!)
@@ -125,13 +125,13 @@ public struct EasyHTTPRequestSetup<L>{
     }
 }
 public struct EasyHTTPRequests {
-    static var ok = EasyHTTPRequestSetup<Bool> { (response, result) -> (Bool) in
+    public static var ok = EasyHTTPRequestSetup<Bool> { (response, result) -> (Bool) in
         guard response != nil else{
             return false
         }
         return false
     }
-    static func standard<T:Decodable>(type:T.Type)->EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>{
+    public static func standard<T:Decodable>(type:T.Type)->EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>{
         return EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)> { (response, res) -> ((URLResponse?,Result<T,Error>)) in
             switch res{
             case .success(let data):
@@ -146,7 +146,7 @@ public struct EasyHTTPRequests {
             }
         }
     }
-    static func basicAuthStandard<T:Decodable>(type:T.Type,auth:String)->EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>{
+    public static func basicAuthStandard<T:Decodable>(type:T.Type,auth:String)->EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>{
         return EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>(auth: auth){ (response, res) -> ((URLResponse?,Result<T,Error>)) in
             switch res{
             case .success(let data):
