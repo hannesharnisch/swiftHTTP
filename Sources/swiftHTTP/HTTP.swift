@@ -80,9 +80,9 @@ public class EasyHTTP {
         return self
     }
     public func fire(){
-        print(urlRequest?.debugDescription)
-        print(urlRequest?.allHTTPHeaderFields)
-        print(String(data: (urlRequest?.httpBody) ?? "GET".data(using: .utf8)!, encoding: .utf8))
+        //print(urlRequest?.debugDescription)
+        //print(urlRequest?.allHTTPHeaderFields)
+        //print(String(data: (urlRequest?.httpBody) ?? "GET".data(using: .utf8)!, encoding: .utf8))
         self.session?.resume()
     }
 }
@@ -135,10 +135,18 @@ public struct EasyHTTPRequests {
         guard let res = (response as? HTTPURLResponse) else{
             return false
         }
-        print(res.statusCode)
-        print(response)
-        print(result)
         return res.statusCode == 200
+    }
+    public static func okBasicAuth(auth:String) -> EasyHTTPRequestSetup<Bool>{
+        return EasyHTTPRequestSetup<Bool>(auth:auth) { (response, result) -> (Bool) in
+        guard response != nil else{
+            return false
+        }
+        guard let res = (response as? HTTPURLResponse) else{
+            return false
+        }
+        return res.statusCode == 200
+    }
     }
     public static func standard<T:Decodable>(type:T.Type)->EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>{
         return EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)> { (response, res) -> ((URLResponse?,Result<T,Error>)) in
