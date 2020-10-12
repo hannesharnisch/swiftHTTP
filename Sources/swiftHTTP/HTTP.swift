@@ -128,43 +128,24 @@ public struct EasyHTTPRequestSetup<L>{
     }
 }
 public struct EasyHTTPRequests {
-    public static var ok = EasyHTTPRequestSetup<Bool> { (response, result) -> (Bool) in
-        guard response != nil else{
-            return false
-        }
-        guard let res = (response as? HTTPURLResponse) else{
-            return false
-        }
-        return res.statusCode == 200
-    }
-    public static func okBasicAuth(auth:String) -> EasyHTTPRequestSetup<Bool>{
+    public static func ok(auth:String? = nil) -> EasyHTTPRequestSetup<Bool>{
         return EasyHTTPRequestSetup<Bool>(auth:auth) { (response, result) -> (Bool) in
-        guard response != nil else{
-            return false
-        }
-        guard let res = (response as? HTTPURLResponse) else{
-            return false
-        }
-        return res.statusCode == 200
-    }
-    }
-    public static func standard<T:Decodable>(type:T.Type)->EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>{
-        return EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)> { (response, res) -> ((URLResponse?,Result<T,Error>)) in
-            switch res{
-            case .success(let data):
-                do{
-                    let resultObj = try JSONDecoder().decode(T.self, from: data)
-                    return (response,.success(resultObj))
-                }catch(let err){
-                    return (response,.failure(err))
-                }
-            case .failure(let err):
-                return (response,.failure(err))
+            guard response != nil else{
+                return false
             }
+            guard let res = (response as? HTTPURLResponse) else{
+                return false
+            }
+            return res.statusCode == 200
         }
     }
-    public static func basicAuthStandard<T:Decodable>(type:T.Type,auth:String)->EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>{
-        return EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>(auth: auth){ (response, res) -> ((URLResponse?,Result<T,Error>)) in
+    public static func basic(auth:String? = nil) -> EasyHTTPRequestSetup<(URLResponse?,Result<Data,Error>)> {
+        return EasyHTTPRequestSetup<(URLResponse?,Result<Data,Error>)>(auth: auth) { (response, res) -> ((URLResponse?,Result<Data,Error>)) in
+            return (response,res)
+        }
+    }
+    public static func standard<T:Decodable>(type:T.Type, auth:String? = nil)->EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>{
+        return EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>(auth: auth) { (response, res) -> ((URLResponse?,Result<T,Error>)) in
             switch res{
             case .success(let data):
                 do{
