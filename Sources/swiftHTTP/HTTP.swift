@@ -17,22 +17,29 @@ public class HTTP {
     public init(methode:HttpMethode){
         self.methode = methode
     }
-    public func with<T:Codable>(url:String,body:T? = nil) -> HTTP? {
+    public func with<T:Codable>(url:String,body:T) -> HTTP? {
         self.urlRequest = URLRequest(url: URL(string: url)!)
         self.urlRequest?.httpMethod = self.methode.rawValue
         switch self.methode {
         case .get:
             return self
         default:
-            guard body != nil else {
-                return nil
-            }
             self.urlRequest!.setValue("application/json", forHTTPHeaderField: "Content-Type")
             guard let encoded = try? JSONEncoder().encode(body) else{
                 return nil
             }
             self.urlRequest?.httpBody = encoded
             return self
+        }
+    }
+    public func with(url:String) -> HTTP? {
+        self.urlRequest = URLRequest(url: URL(string: url)!)
+        self.urlRequest?.httpMethod = self.methode.rawValue
+        switch self.methode {
+        case .get:
+            return self
+        default:
+            return nil
         }
     }
     public func setAuth(type:String,credentials:String) -> HTTP {
