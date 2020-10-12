@@ -65,7 +65,7 @@ class HTTP {
     private func registerDataTask(callback:@escaping (URLResponse?,Result<Data,Error>) -> Void) -> HTTP{
         self.session = URLSession.shared.dataTask(with: self.urlRequest!, completionHandler: { (data, response, error) in
             guard error == nil else{
-                callback(response,.failure(error))
+                callback(response,.failure(error!))
                 return
             }
             callback(response,.success(data!))
