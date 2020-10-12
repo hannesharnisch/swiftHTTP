@@ -135,6 +135,9 @@ public struct EasyHTTPRequests {
         guard let res = (response as? HTTPURLResponse) else{
             return false
         }
+        print(res.statusCode)
+        print(response)
+        print(result)
         return res.statusCode == 200
     }
     public static func standard<T:Decodable>(type:T.Type)->EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>{
