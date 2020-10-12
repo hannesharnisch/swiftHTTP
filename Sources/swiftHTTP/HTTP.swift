@@ -140,12 +140,12 @@ public struct EasyHTTPRequests {
         }
     }
     public static func basic(auth:String? = nil) -> EasyHTTPRequestSetup<(URLResponse?,Result<Data,Error>)> {
-        return EasyHTTPRequestSetup<(URLResponse?,Result<Data,Error>)>(auth: auth) { (response, res) -> ((URLResponse?,Result<Data,Error>)) in
+        return EasyHTTPRequestSetup<(URLResponse?,Result<Data,Error>)>(auth: auth) { (response, res) -> (URLResponse?,Result<Data,Error>) in
             return (response,res)
         }
     }
     public static func standard<T:Decodable>(type:T.Type, auth:String? = nil)->EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>{
-        return EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>(auth: auth) { (response, res) -> ((URLResponse?,Result<T,Error>)) in
+        return EasyHTTPRequestSetup<(URLResponse?,Result<T,Error>)>(auth: auth) { (response, res) -> (URLResponse?,Result<T,Error>) in
             switch res{
             case .success(let data):
                 do{
