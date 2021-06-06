@@ -10,14 +10,14 @@ import Combine
 
 
 
-class StandardHTTPRequest{
-    static func with<T:Encodable>(url:String,body:T, methode:HttpMethode = .post) -> EasyHTTPRequest? {
+public class StandardHTTPRequest{
+    public static func with<T:Encodable>(url:String,body:T, methode:HttpMethode = .post) -> EasyHTTPRequest? {
         return EasyHTTPRequest(url: url, body: body, methode: methode)
     }
-    static func with(url:String, methode:HttpMethode = .get) -> EasyHTTPRequest? {
+    public static func with(url:String, methode:HttpMethode = .get) -> EasyHTTPRequest? {
         return EasyHTTPRequest(url: url, methode: methode)
     }
-    static func ok<T:Encodable>(url:String,body:T, auth:String? = nil, methode:HttpMethode = .post) -> AnyPublisher<Bool,Never>{
+    public static func ok<T:Encodable>(url:String,body:T, auth:String? = nil, methode:HttpMethode = .post) -> AnyPublisher<Bool,Never>{
         let easyHTTP = EasyHTTPRequest(url: url, body: body, methode: methode)
         if auth != nil{
             _ = easyHTTP!.setAuth(credentials: auth!)
@@ -26,7 +26,7 @@ class StandardHTTPRequest{
             return true
         }.replaceError(with: false).eraseToAnyPublisher()
     }
-    static func ok(url:String,auth:String? = nil, methode:HttpMethode = .get)-> AnyPublisher<Bool,Never>{
+    public static func ok(url:String,auth:String? = nil, methode:HttpMethode = .get)-> AnyPublisher<Bool,Never>{
         let easyHTTP = EasyHTTPRequest(url: url, methode: methode)
         if auth != nil{
             _ = easyHTTP.setAuth(credentials: auth!)
@@ -37,9 +37,9 @@ class StandardHTTPRequest{
     }
 }
 
-class EasyHTTPRequest{
+public class EasyHTTPRequest{
     private var urlRequest:URLRequest
-    init(url:String, methode:HttpMethode){
+    public init(url:String, methode:HttpMethode){
         if url.contains("://") {
             self.urlRequest = URLRequest(url: URL(string: url)!)
         }else{
@@ -47,7 +47,7 @@ class EasyHTTPRequest{
         }
         self.urlRequest.httpMethod = methode.rawValue
     }
-    convenience init?<T:Encodable>(url:String,body:T, methode:HttpMethode){
+    public convenience init?<T:Encodable>(url:String,body:T, methode:HttpMethode){
         self.init(url:url, methode:methode)
         self.urlRequest.setValue("application/json", forHTTPHeaderField: "Content-Type")
         guard let encoded = try? JSONEncoder().encode(body) else{
@@ -55,28 +55,28 @@ class EasyHTTPRequest{
         }
         self.urlRequest.httpBody = encoded
     }
-    func setAuth(type:String = "Basic",credentials:String) -> EasyHTTPRequest {
+    public func setAuth(type:String = "Basic",credentials:String) -> EasyHTTPRequest {
         self.urlRequest.setValue("\(type) \(credentials)", forHTTPHeaderField: "Authorization")
         return self
     }
-    func customHeaders(list:Dictionary<String,String>){
+    public func customHeaders(list:Dictionary<String,String>){
         for item in list{
             self.urlRequest.setValue(item.value, forHTTPHeaderField: item.key)
         }
     }
-    func onDecodableResult<D:Decodable>(callback:@escaping (URLResponse?,Result<D,Error>)->Void) -> EasyHTTPSession{
+    public func onDecodableResult<D:Decodable>(callback:@escaping (URLResponse?,Result<D,Error>)->Void) -> EasyHTTPSession{
         return EasyHTTPSession(urlRequest: self.urlRequest, callback: callback)
     }
-    func onResult(callback:@escaping (URLResponse?,Result<Data,Error>) -> Void) -> EasyHTTPSession{
+    public func onResult(callback:@escaping (URLResponse?,Result<Data,Error>) -> Void) -> EasyHTTPSession{
         return EasyHTTPSession(urlRequest: self.urlRequest, callback: callback)
     }
-    func publisher<T:Decodable>(type:T.Type) -> AnyPublisher<T,Error>{
+    public func publisher<T:Decodable>(type:T.Type) -> AnyPublisher<T,Error>{
         return URLSession.shared.dataTaskPublisher(for: self.urlRequest).map{
             return $0.data
         }.decode(type: type, decoder: JSONDecoder()).eraseToAnyPublisher()
     }
 }
-class EasyHTTPSession {
+public class EasyHTTPSession {
     private var urlSession:URLSessionDataTask?
     private let urlRequest:URLRequest
     init<D:Decodable>(urlRequest:URLRequest, callback:@escaping (URLResponse?,Result<D,Error>)->Void){
@@ -108,14 +108,14 @@ class EasyHTTPSession {
             callback(response,.success(data!))
         })
     }
-    func fire(){
+    public func fire(){
         self.urlSession?.resume()
     }
 }
 
 
 
-enum HttpMethode:String{
+public enum HttpMethode:String{
     case put = "PUT"
     case post = "POST"
     case get = "GET"
