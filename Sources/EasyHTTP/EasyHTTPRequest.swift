@@ -57,14 +57,26 @@ public class EasyHTTPRequest{
         return EasyHTTPSession(urlRequest: self.urlRequest,session: self.urlSession, callback: callback)
     }
     public func publisher<T:Decodable>(type:T.Type) -> AnyPublisher<T,Error>{
-        return self.urlSession.dataTaskPublisher(for: self.urlRequest).map{
-            return $0.data
+        return self.urlSession.dataTaskPublisher(for: self.urlRequest).tryMap() { element -> Data in
+            guard let httpResponse = element.response as? HTTPURLResponse else{
+                throw URLError(.badServerResponse)
+            }
+            guard httpResponse.statusCode == 200 else {
+                    switch httpResponse.statusCode {
+                    case 400:
+                        throw URLError(.unknown)
+                    case 401:
+                        throw URLError(.userAuthenticationRequired)
+                    default:
+                        throw URLError(.badServerResponse)
+                    }
+            }
+            return element.data
         }.decode(type: type, decoder: JSONDecoder()).eraseToAnyPublisher()
     }
 }
 private class IgnoreCertSessionDelegate:NSObject, URLSessionDelegate {
     func urlSession(_ session: URLSession, didReceive challenge: URLAuthenticationChallenge, completionHandler: @escaping (URLSession.AuthChallengeDisposition, URLCredential?) -> Void) {
-        print(challenge.protectionSpace.serverTrust)
         completionHandler(.useCredential,URLCredential(trust: challenge.protectionSpace.serverTrust!))
     }
 }
