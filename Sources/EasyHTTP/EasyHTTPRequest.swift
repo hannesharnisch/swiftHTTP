@@ -56,6 +56,9 @@ public class EasyHTTPRequest{
     public func onResult(callback:@escaping (URLResponse?,Result<Data,Error>) -> Void) -> EasyHTTPSession{
         return EasyHTTPSession(urlRequest: self.urlRequest,session: self.urlSession, callback: callback)
     }
+    public func publisher() -> URLSession.DataTaskPublisher {
+        return self.urlSession.dataTaskPublisher(for: self.urlRequest)
+    }
     public func publisher<T:Decodable>(type:T.Type) -> AnyPublisher<T,Error>{
         return self.urlSession.dataTaskPublisher(for: self.urlRequest).tryMap() { element -> Data in
             guard let httpResponse = element.response as? HTTPURLResponse else{
