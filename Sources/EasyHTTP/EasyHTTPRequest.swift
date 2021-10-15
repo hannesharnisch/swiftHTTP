@@ -45,10 +45,11 @@ public class EasyHTTPRequest{
         self.urlSession = URLSession(configuration: config, delegate: delegate, delegateQueue: OperationQueue())
         return self
     }
-    public func customHeaders(list:Dictionary<String,String>){
+    public func customHeaders(list:Dictionary<String,String>) -> EasyHTTPRequest {
         for item in list{
             self.urlRequest.setValue(item.value, forHTTPHeaderField: item.key)
         }
+        return self
     }
     public func onDecodableResult<D:Decodable>(callback:@escaping (URLResponse?,Result<D,Error>)->Void) -> EasyHTTPSession{
         return EasyHTTPSession(urlRequest: self.urlRequest,session: self.urlSession, callback: callback)
