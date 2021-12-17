@@ -20,7 +20,7 @@ public class StandardHTTPRequest{
         if auth != nil{
             _ = easyHTTP!.setAuth(credentials: auth!)
         }
-        return easyHTTP!.publisher(type: String.self).map { (string) -> Bool in
+        return easyHTTP!.publisher(String.self).map { (string) -> Bool in
             return true
         }.replaceError(with: false).eraseToAnyPublisher()
     }
@@ -29,7 +29,7 @@ public class StandardHTTPRequest{
         if auth != nil{
             _ = easyHTTP.setAuth(credentials: auth!)
         }
-        return easyHTTP.publisher(type: String.self).map { (string) -> Bool in
+        return easyHTTP.publisher(String.self).map { (string) -> Bool in
             return true
         }.replaceError(with: false).eraseToAnyPublisher()
     }

@@ -60,7 +60,7 @@ public class EasyHTTPRequest{
     public func publisher() -> URLSession.DataTaskPublisher {
         return self.urlSession.dataTaskPublisher(for: self.urlRequest)
     }
-    public func publisher<T:Decodable>(type:T.Type) -> AnyPublisher<T,Error>{
+    public func publisher<T:Decodable>(_ type:T.Type) -> AnyPublisher<T,Error>{
         return self.urlSession.dataTaskPublisher(for: self.urlRequest).tryMap() { element -> Data in
             guard let httpResponse = element.response as? HTTPURLResponse else{
                 throw URLError(.badServerResponse)
@@ -77,6 +77,39 @@ public class EasyHTTPRequest{
             }
             return element.data
         }.decode(type: type, decoder: JSONDecoder()).eraseToAnyPublisher()
+    }
+    @available(watchOS 8.0, *)
+    @available(tvOS 15.0, *)
+    @available(iOS 15.0, *)
+    @available(macOS 12.0, *)
+    public func data(delegate:URLSessionTaskDelegate? = nil) async throws -> (Data,HTTPURLResponse) {
+        let (data,response) = try await self.urlSession.data(for: self.urlRequest,delegate: delegate)
+        guard let res = response as? HTTPURLResponse else{
+            throw URLError(.unknown)
+        }
+        return (data,res)
+    }
+    
+    @available(watchOS 8.0, *)
+    @available(tvOS 15.0, *)
+    @available(iOS 15.0, *)
+    @available(macOS 12.0, *)
+    public func data<T:Decodable>(_ type:T.Type,delegate:URLSessionTaskDelegate? = nil)  async throws -> T {
+        let (data,response) = try await self.urlSession.data(for: self.urlRequest,delegate: delegate)
+        guard let res = response as? HTTPURLResponse else{
+            throw URLError(.unknown)
+        }
+        guard res.statusCode == 200 else {
+            switch res.statusCode {
+            case 400:
+                throw URLError(.unknown)
+            case 401:
+                throw URLError(.userAuthenticationRequired)
+            default:
+                throw URLError(.badServerResponse)
+            }
+        }
+        return try JSONDecoder().decode(type, from: data)
     }
 }
 private class IgnoreCertSessionDelegate:NSObject, URLSessionDelegate {
